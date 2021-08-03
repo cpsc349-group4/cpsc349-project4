@@ -5,16 +5,73 @@
 /* Custom Tailwind classes go here */
 @layer components {
 
-    h1 {
-        @apply text-2xl py-4
+    /****** Posts ******/
+    .post {
+        @apply flex flex-col p-4 max-w-lg mx-auto rounded mb-4 border border-green-200
     }
 
-    h2 {
-        @apply text-xl py-2
+    .userId {
+        @apply pb-2
     }
 
-    footer {
-        @apply bg-gray-200
+    .postText {
+        @apply pb-2
+    }
+
+    /****** Nav ******/
+
+    .nav {
+        @apply bg-green-200 w-64 list-none text-green-700 sm:text-lg md:text-xl
+    }
+    
+    .navli {
+        @apply block py-2.5 px-4 rounded transition duration-200 hover:bg-green-400 hover:text-white
+    }
+
+    /****** Body ******/
+
+    .body {
+        @apply relative min-h-screen flex font-sans font-normal
+    }
+
+    .content {
+        @apply flex flex-col flex-grow md:pl-10 md:pr-10
+    }
+
+    .header {
+        @apply flex flex-row justify-center text-3xl p-5
+    }
+
+    .headerh1 {
+        @apply pt-5
+    }
+
+    /****** Form ******/
+
+    .form {
+        @apply flex flex-col p-4 sm:w-72 md:w-96 max-w-2xl mx-auto rounded mb-4 border border-green-200
+    }
+
+    .formInput {
+        @apply border border-green-200 p-2 mb-2
+    }
+
+    .formButton {
+        @apply border border-green-200 hover:bg-green-200 transition duration-200
+    } 
+
+    .formRedirects {
+        @apply sm:flex justify-between pt-2 
+    }
+
+    .formRedirectsButtons {
+        @apply hover:text-green-500 transition duration-200
+    }
+
+    /****** Footer ******/
+
+    .footer {
+        @apply flex justify-center
     }
 
 }

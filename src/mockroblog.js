@@ -1,5 +1,18 @@
 /* Mockroblog client API stubs for prototyping */
 
+export function GetUserFromId (userid) {
+  switch (userid) {
+    case 1:
+      return 'ProfAvery'
+    case 2:
+      return 'KevinAWortman'
+    case 3:
+      return 'Beth_CSUF'
+    default:
+  }
+  return userid
+}
+
 export function createUser (username, email, password) {
   if (['ProfAvery', 'KevinAWortman', 'Beth_CSUF'].indexOf(username) < 0) {
     return {
