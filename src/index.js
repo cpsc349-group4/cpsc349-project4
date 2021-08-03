@@ -71,7 +71,7 @@ if (document.getElementById('loginButton')) {
     if (data != null) {
       window.sessionStorage.setItem('userid', data.id)
       window.sessionStorage.setItem('user', data.username)
-      window.location = window.location.toString() + ('/myPosts.html')
+      // window.location.href = 'http://localhost:8080/myPosts.html'
     }
   }
 }
