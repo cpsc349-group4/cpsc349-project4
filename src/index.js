@@ -1,5 +1,6 @@
 import './tailwind.css'
 import './magnifying-glass.png'
+import './twotter.png'
 
 import * as mockroblog from './mockroblog.js'
 window.mockroblog = mockroblog
@@ -18,6 +19,7 @@ async function search (term = '') {
   result.textContent = JSON.stringify(data.resources, null, 2)
   resultDiv.hidden = !term
 }
+
 if (searchForm != null) {
   searchForm.addEventListener('submit', (event) => {
     event.preventDefault()
@@ -30,18 +32,28 @@ if (keyword != null) {
   })
 }
 
-// display public timeline
-const publicTimeline = mockroblog.getPublicTimeline()
 const homeTimeline = mockroblog.getHomeTimeline(window.sessionStorage.getItem('user'))
 const userTimeline = mockroblog.getUserTimeline(window.sessionStorage.getItem('user'))
 const curTimeLine = mockroblog.getUserTimeline(window.sessionStorage.getItem('usersearch'))
 
 const publicDisplay = document.querySelector('#publicTimeline-json')
-if (publicDisplay != null) {
-  publicTimeline.forEach(post => {
-    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${mockroblog.GetUserFromId(post.user_id)}</div><div class="postText">${post.text}</div><div class="postTimestamp">${post.timestamp}</div></article>`
-  })
+
+// display public timeline from api
+async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
+  const response = await fetch(url)
+  const data = await response.json()
+  // console.log(JSON.stringify(data))
+  const dataObj = data.resources
+  // console.log(data.resources)
+  for (const key in dataObj) {
+    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${dataObj[key].user_id}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
+  }
 }
+
+if (publicDisplay != null) {
+  displayPublicPosts()
+}
+
 const userpubDisplay = document.querySelector('#myPostsTimeline-json')
 if (userpubDisplay != null) {
   userTimeline.forEach(post => {
