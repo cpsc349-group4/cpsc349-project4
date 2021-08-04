@@ -73,19 +73,33 @@ if (curDisplay != null) {
   })
 }
 
+export function authenticateUser (username, password) {
+  return fetch(`http://localhost:5000/users/?username=${username}&password=${password}`, { method: 'get' })
+    .then((res) => res.text())
+    .then((text) => {
+      if (!text.includes('username')) {
+        return null
+      } else {
+        return text
+      }
+    }).catch((error) => {
+      throw error
+    })
+}
+
 // authenticate user data from login form on login button click
 if (document.getElementById('loginButton')) {
   const loginButton = document.getElementById('loginButton')
-  loginButton.onclick = () => {
+  loginButton.addEventListener('click', async event => {
+    event.preventDefault()
     const username = document.getElementById('username').value
     const password = document.getElementById('password').value
-    const data = mockroblog.authenticateUser(username, password)
-    if (data != null) {
-      window.sessionStorage.setItem('userid', data.id)
-      window.sessionStorage.setItem('user', data.username)
-      // window.location.href = 'http://localhost:8080/myPosts.html'
+    if (await authenticateUser(username, password) != null) {
+      // console.log(username)
+      window.sessionStorage.setItem('user', username)
+      window.location.href = 'myPosts.html'
     }
-  }
+  })
 }
 
 // SearchUser
