@@ -34,14 +34,10 @@ module.exports = {
       filename: 'newPost.html',
       template: path.resolve(__dirname, 'src/newPost.html')
     }),
-    new HtmlWebpackPlugin({
+    /*new HtmlWebpackPlugin({
       filename: 'newUser.html',
       template: path.resolve(__dirname, 'src/newUser.html')
-    }),
-    new HtmlWebpackPlugin({
-      filename: 'accRecov.html',
-      template: path.resolve(__dirname, 'src/accRecov.html')
-    }),
+    }),*/
     
   ],
   module: {

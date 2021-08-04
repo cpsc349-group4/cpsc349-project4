@@ -1,8 +1,6 @@
 import './tailwind.css'
 import './magnifying-glass.png'
 import './twotter.png'
-import './twottertiny.png'
-
 
 import * as mockroblog from './mockroblog.js'
 window.mockroblog = mockroblog
