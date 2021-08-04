@@ -4,7 +4,7 @@
     		<title>Twotter</title>
 		<link rel="shortcut icon" type="image/jpg" href="twottertiny.png"/>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   	</head>
   	<body class="body">
 		<nav class="nav">
@@ -21,13 +21,21 @@
 				<h1 class="headerh1">Twotter</h1>
 				<img src="twotter.png" width="100" height="100">
 			</header>
-
-			<input class="formInput" id="User" type="text" title="User" placeholder="User" />
-			<button class="formButton" id="Search" type="submit">Search User</button>
-
-			<section id="curatedTimeline-json"></section> 
+			<!-- <form class="form"> -->
+                <form class="form">
+					<input class="formInput" id="email" type="email" title="Email" placeholder="Email" />
+                    <input class="formInput" id="username" type="text" title="Username" placeholder="Username" />
+                    <button class="formButton" id="resetButton" type="submit">Reset Password</button>
+                    <div class="formRedirects">
+                        <a class="formRedirectsButtons" href="index.html">Already have an Account?</a>
+                        <a class="formRedirectsButtons" href="newUser.html">Create Account</a>
+                    </div>
+                </form>
+            <!-- </form> -->
 			<footer class="footer">@ Copyright 2021</footer>
 		</article>
 		
   	</body>
 </html>
+
+
