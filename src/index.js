@@ -3,6 +3,7 @@ import './magnifying-glass.png'
 import './twotter.png'
 
 import * as mockroblog from './mockroblog.js'
+import { data } from 'autoprefixer'
 window.mockroblog = mockroblog
 
 const searchForm = document.querySelector('#search')
@@ -32,9 +33,21 @@ if (keyword != null) {
   })
 }
 
-const homeTimeline = mockroblog.getHomeTimeline(window.sessionStorage.getItem('user'))
-const userTimeline = mockroblog.getUserTimeline(window.sessionStorage.getItem('user'))
-const curTimeLine = mockroblog.getUserTimeline(window.sessionStorage.getItem('usersearch'))
+async function getCurrentUserId (url = 'http://localhost:5000/users/') {
+  await fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      for (const key in data.resources) {
+        if (data.resources[key].username === window.sessionStorage.getItem('user')) {
+          window.sessionStorage.setItem('user_id', data.resources[key].id)
+        }
+      }
+    })
+}
+
+// const homeTimeline = mockroblog.getHomeTimeline(window.sessionStorage.getItem('user'))
+// const userTimeline = mockroblog.getUserTimeline(window.sessionStorage.getItem('user'))
+// const curTimeLine = mockroblog.getUserTimeline(window.sessionStorage.getItem('usersearch'))
 
 const publicDisplay = document.querySelector('#publicTimeline-json')
 
@@ -50,10 +63,12 @@ async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
   }
 }
 
+// Display public timline if the page is up
 if (publicDisplay != null) {
   displayPublicPosts()
 }
 
+/*
 const userpubDisplay = document.querySelector('#myPostsTimeline-json')
 if (userpubDisplay != null) {
   userTimeline.forEach(post => {
@@ -72,7 +87,7 @@ if (curDisplay != null) {
     curDisplay.innerHTML += `<article class="post"><div class="userId">User: ${mockroblog.GetUserFromId(post.user_id)}</div><div class="postText">${post.text}</div><div class="postTimestamp">${post.timestamp}</div></article>`
   })
 }
-
+*/
 export function authenticateUser (username, password) {
   return fetch(`http://localhost:5000/users/?username=${username}&password=${password}`, { method: 'get' })
     .then((res) => res.text())
@@ -97,8 +112,19 @@ if (document.getElementById('loginButton')) {
     if (await authenticateUser(username, password) != null) {
       // console.log(username)
       window.sessionStorage.setItem('user', username)
+      getCurrentUserId()
       window.location.href = 'myPosts.html'
     }
+  })
+}
+
+// delete session data when clicking logout button
+if (document.getElementById('logoutButton')) {
+  const logoutButton = document.getElementById('logoutButton')
+  logoutButton.addEventListener('click', async event => {
+    event.preventDefault()
+    window.sessionStorage.clear()
+    window.location.href = 'index.html'
   })
 }
 
@@ -118,9 +144,35 @@ if (document.getElementById('Search')) {
 // create a new post
 if (document.getElementById('newPostButton')) {
   const newPostButton = document.getElementById('newPostButton')
-  newPostButton.onclick = () => {
+  newPostButton.addEventListener('click', async event => {
+    event.preventDefault()
+    const now = new Date()
+    const timestamp =
+      now.getUTCFullYear() + '-' +
+      String(now.getUTCMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getUTCDate()).padStart(2, '0') + ' ' +
+      String(now.getUTCHours()).padStart(2, '0') + ':' +
+      String(now.getUTCMinutes()).padStart(2, '0') + ':' +
+      String(now.getUTCSeconds()).padStart(2, '0')
+
     const postText = document.getElementById('postText').value
-    const data = mockroblog.postMessage(window.sessionStorage.getItem('userid'), postText)
-    console.log(data)
-  }
+
+    fetch('http://localhost:5000/posts/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user_id: window.sessionStorage.getItem('user_id'),
+        text: postText,
+        timestamp: timestamp
+      })
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.log(err))
+
+    window.location.href = 'myPosts.html'
+  })
 }

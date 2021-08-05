@@ -24,33 +24,6 @@ export function createUser (username, email, password) {
   }
 }
 
-export function authenticateUser (username, password) {
-  if (username === 'ProfAvery' && password === 'password') {
-    return {
-      id: 1,
-      username: 'ProfAvery',
-      email: 'kavery@fullerton.edu',
-      password: 'password'
-    }
-  } else if (username === 'KevinAWortman' && password === 'qwerty') {
-    return {
-      id: 2,
-      username: 'KevinAWortman',
-      email: 'kwortman@fullerton.edu',
-      password: 'qwerty'
-    }
-  } else if (username === 'Beth_CSUF' && password === 'secret') {
-    return {
-      id: 3,
-      username: 'Beth_CSUF',
-      email: 'beth.harnick.shapiro@fullerton.edu',
-      password: 'secret'
-    }
-  }
-
-  return null
-}
-
 export function addFollower (userId, userIdToFollow) {
   if (userId > 3) {
     return {
