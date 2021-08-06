@@ -33,6 +33,21 @@ if (keyword != null) {
   })
 }
 
+async function getUserById (userid) {
+  return fetch(`http://localhost:5000/users/`)
+    .then((res) => res.json())
+    .then((data) => {
+      for (const key in data.resources) {
+        // console.log(data.resources[key].id)
+        if (data.resources[key].id == userid) {
+          return data.resources[key].username
+        }
+      }
+    }).catch((error) => {
+      throw error
+    })
+}
+
 async function getCurrentUserId (url = 'http://localhost:5000/users/') {
   await fetch(url)
     .then(response => response.json())
@@ -51,16 +66,22 @@ async function getCurrentUserId (url = 'http://localhost:5000/users/') {
 
 const publicDisplay = document.querySelector('#publicTimeline-json')
 const curDisplay = document.querySelector('#curatedTimeline-json')
+const mypostDisplay = document.querySelector('#myPostsTimeline-json')
+const homeDisplay = document.querySelector('#homeTimeline-json')
 
-async function displayCrPosts(userid){
+async function displayPosts(userid, htmlElement){
   const response = await fetch(`http://localhost:5000/posts/`, { method: 'get' })
   const data = await response.json()
    console.log(JSON.stringify(data))
-  const dataObj = data.resources
+   const dataObj = data.resources
    console.log(data.resources)
+
   for (const key in dataObj) {
-    if (dataObj[key].user_id == userid)
-      curDisplay.innerHTML += `<article class="post"><div class="userId">User: ${dataObj[key].user_id}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
+    if (dataObj[key].user_id == userid) {
+      const username = await getUserById(userid);
+      console.log(username)
+      htmlElement.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
+    }
   }
 }
 // display public timeline from api
@@ -71,12 +92,18 @@ async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
   const dataObj = data.resources
   // console.log(data.resources)
   for (const key in dataObj) {
-    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${dataObj[key].user_id}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
+    const username = await getUserById(dataObj[key].user_id);
+    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
   }
 }
 
-if (curDisplay != null){
-  displayCrPosts(window.sessionStorage.getItem('usersearch'));
+if (mypostDisplay != null) {
+  console.log(window.sessionStorage.getItem('user_id'))
+  displayPosts(window.sessionStorage.getItem('user_id'), mypostDisplay)
+}
+
+if (curDisplay != null) {
+  displayPosts(window.sessionStorage.getItem('usersearch'), curDisplay);
 }
 // Display public timline if the page is up
 if (publicDisplay != null) {
@@ -158,7 +185,7 @@ if (document.getElementById('loginButton')) {
     if (await authenticateUser(username, password) != null) {
       // console.log(username)
       window.sessionStorage.setItem('user', username)
-      getCurrentUserId()
+      await getCurrentUserId()
       window.location.href = 'myPosts.html'
     }
   })
