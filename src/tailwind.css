@@ -18,6 +18,18 @@
         @apply pb-2
     }
 
+    .likeButton {
+        @apply flex mx-auto hover:text-green-200 transition duration-100 border border-green-200 rounded py-1 px-2
+    }
+
+    .liked {
+        @apply flex mx-auto hover:text-gray-200 transition duration-100 border border-gray-200 rounded py-1 px-2 text-gray-300
+    }
+
+    .postButton {
+        
+    }
+
     /****** Nav ******/
 
     .nav {
