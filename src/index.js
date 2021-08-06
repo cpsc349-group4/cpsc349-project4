@@ -50,7 +50,19 @@ async function getCurrentUserId (url = 'http://localhost:5000/users/') {
 // const curTimeLine = mockroblog.getUserTimeline(window.sessionStorage.getItem('usersearch'))
 
 const publicDisplay = document.querySelector('#publicTimeline-json')
+const curDisplay = document.querySelector('#curatedTimeline-json')
 
+async function displayCrPosts(userid){
+  const response = await fetch(`http://localhost:5000/posts/`, { method: 'get' })
+  const data = await response.json()
+   console.log(JSON.stringify(data))
+  const dataObj = data.resources
+   console.log(data.resources)
+  for (const key in dataObj) {
+    if (dataObj[key].user_id == userid)
+      curDisplay.innerHTML += `<article class="post"><div class="userId">User: ${dataObj[key].user_id}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
+  }
+}
 // display public timeline from api
 async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
   const response = await fetch(url)
@@ -63,6 +75,9 @@ async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
   }
 }
 
+if (curDisplay != null){
+  displayCrPosts(window.sessionStorage.getItem('usersearch'));
+}
 // Display public timline if the page is up
 if (publicDisplay != null) {
   displayPublicPosts()
@@ -100,6 +115,37 @@ export function authenticateUser (username, password) {
     }).catch((error) => {
       throw error
     })
+}
+
+export function CreateUser(user, pass, em){
+  const data = { username: user, email: em, password: pass};
+  return fetch(`http://localhost:5000/users/`, { method: 'POST' ,
+  body: JSON.stringify(data),
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Success:', data);
+    return username;
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+    return null;
+  });
+}
+
+// authenticate user data from login form on login button click
+if (document.getElementById('createButton')) {
+  const loginButton = document.getElementById('createButton')
+  loginButton.addEventListener('click', async event => {
+    event.preventDefault()
+    const email = document.getElementById('email').value
+    const username = document.getElementById('username').value
+    const password = document.getElementById('password').value
+    if (await CreateUser(username, password, email) != null) {
+      // console.log(username)
+      window.location.href = 'index.html'
+    }
+  })
 }
 
 // authenticate user data from login form on login button click
