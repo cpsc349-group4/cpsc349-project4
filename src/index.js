@@ -230,7 +230,7 @@ if (document.getElementById('newPostButton')) {
 
     const postText = document.getElementById('postText').value
 
-    fetch('http://localhost:5000/posts/', {
+    await fetch('http://localhost:5000/posts/', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
