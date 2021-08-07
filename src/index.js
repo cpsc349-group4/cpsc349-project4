@@ -48,6 +48,71 @@ async function getUserById (userid) {
     })
 }
 
+async function getUserbyName (username) {
+  return fetch(`http://localhost:5000/users/?username=${username}`, { method: 'get'})
+  .then((res) => res.json())
+  .then((json) => {
+    for (const key in json.resources) {
+      if (json.resources[key].id) {
+        return json.resources[key].id
+      }
+    }
+  })
+  .catch((error) => {
+    throw error
+  })
+}
+
+async function IsFollowing (userid) {
+  const currentUserId = window.sessionStorage.getItem('user_id')
+  return fetch(`http://localhost:5000/followers/?follower_id=${currentUserId}&following_id=${userid}`, { method: 'get' })
+  .then((res) => res.json())
+  .then((json) => {
+    for (const key in json.resources) {
+      return true
+    }
+    return false
+    // console.log('done')
+  }).catch((error) => {
+    throw error
+  })
+}
+
+async function AddFollower (userid) {
+  const currentUserId = window.sessionStorage.getItem('user_id')
+  const data = {
+    follower_id: `${currentUserId}`,
+    following_id: `${userid}`
+  }
+  return fetch('http://localhost:5000/followers/', {
+    method: 'post',
+    body: JSON.stringify(data)
+  })
+    .then((res) => res.json())
+    .then((json) => {
+      console.log(json)
+    })
+}
+
+async function removeFollower (userId) {
+  const currentUserId = window.sessionStorage.getItem('user_id')
+  return fetch(`http://localhost:5000/followers/?follower_id=${currentUserId}&following_id=${userId}`, 
+  { method: 'get' })
+    .then((res) => res.json())
+    .then((json) => {
+      console.log(json)
+      for (const key in json.resources) {
+        if (json.resources[key].id) {
+          fetch(`http://localhost:5000/followers/${json.resources[key].id}`, { method: 'delete' })
+            .then((res) => res.json())
+            .then((json) => {
+              console.log(json)
+            })
+        }
+      }
+    })
+}
+
 async function getCurrentUserId (url = 'http://localhost:5000/users/') {
   await fetch(url)
     .then(response => response.json())
@@ -95,7 +160,10 @@ async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
   // console.log(data.resources)
   for (const key in dataObj) {
     const username = await getUserById(dataObj[key].user_id)
-    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div><div class="postButton"><button type="button" data-id="${dataObj[key].id}" class="likeButton" id="likeButton">Like</button></div></article>`
+    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">
+    ${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}
+    </div><div class="postButton"><button type="button" data-id="${dataObj[key].id}
+    " class="likeButton" id="likeButton">Like</button></div></article>`
   }
   likePost()
 }
@@ -120,9 +188,13 @@ async function displayHomePosts (userid) {
     if (dataObj1[key].user_id == followA[0] || dataObj1[key].user_id == followA[1]) {
       const username = await getUserById(dataObj1[key].user_id)
       // console.log(username)
-      homeDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj1[key].text}</div><div class="postTimestamp">${dataObj1[key].timestamp}</div></article>`
+      homeDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">
+      ${dataObj1[key].text}</div><div class="postTimestamp">${dataObj1[key].timestamp}
+      </div><div class="postButton"><button type="button" data-id="${dataObj1[key].id}
+      " class="likeButton" id="likeButton">Like</button></div></article>`
     }
   }
+  likePost()
 }
 
 if (homeDisplay != null) {
