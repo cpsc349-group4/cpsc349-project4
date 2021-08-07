@@ -3,7 +3,7 @@ import './magnifying-glass.png'
 import './twotter.png'
 
 import * as mockroblog from './mockroblog.js'
-import { data } from 'autoprefixer'
+ import { data } from 'autoprefixer'
 window.mockroblog = mockroblog
 
 const searchForm = document.querySelector('#search')
@@ -34,11 +34,11 @@ if (keyword != null) {
 }
 
 async function getUserById (userid) {
-  return fetch(`http://localhost:5000/users/`)
+  return fetch('http://localhost:5000/users/')
     .then((res) => res.json())
     .then((data) => {
       for (const key in data.resources) {
-        // console.log(data.resources[key].id)
+         console.log(data.resources[key].id)
         if (data.resources[key].id == userid) {
           return data.resources[key].username
         }
@@ -70,17 +70,16 @@ const mypostDisplay = document.querySelector('#myPostsTimeline-json')
 const homeDisplay = document.querySelector('#homeTimeline-json')
 
 // displaying posts
-async function displayPosts(userid, htmlElement){
+async function displayPosts (userid, htmlElement) {
   const response = await fetch(`http://localhost:5000/posts/`, { method: 'get' })
   const data = await response.json()
    console.log(JSON.stringify(data))
-   const dataObj = data.resources
+  const dataObj = data.resources
    console.log(data.resources)
-
   for (const key in dataObj) {
     if (dataObj[key].user_id == userid) {
-      const username = await getUserById(userid);
-      console.log(username)
+      const username = await getUserById(userid)
+       console.log(username)
       htmlElement.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div><div class="postButton"><button type="button" data-id="${dataObj[key].id}" class="likeButton" id="likeButton">Like</button></div></article>`
     }
   }
@@ -94,46 +93,32 @@ async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
   const dataObj = data.resources
   // console.log(data.resources)
   for (const key in dataObj) {
-    const username = await getUserById(dataObj[key].user_id);
+    const username = await getUserById(dataObj[key].user_id)
     publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div><div class="postButton"><button type="button" data-id="${dataObj[key].id}" class="likeButton" id="likeButton">Like</button></div></article>`
   }
   likePost()
 }
 
-// display public timeline from api
-async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
-  const response = await fetch(url)
+async function displayHomePosts (userid) {
+  const response = await fetch('http://localhost:5000/followers/')
   const data = await response.json()
   // console.log(JSON.stringify(data))
   const dataObj = data.resources
   // console.log(data.resources)
-  for (const key in dataObj) {
-    const username = await getUserById(dataObj[key].user_id);
-    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
-  }
-}
-
-async function displayHomePosts (userid) {
-  const response = await fetch('http://localhost:5000/followers/')
-  const data = await response.json()
-   //console.log(JSON.stringify(data))
-  const dataObj = data.resources
-   //console.log(data.resources)
-   const followA = []
+  const followA = []
   for (const key in dataObj) {
     if (dataObj[key].follower_id == userid) {
       followA.push(dataObj[key].following_id)
     }
   }
-
   const response1 = await fetch('http://localhost:5000/posts/')
   const data1 = await response1.json()
   const dataObj1 = data1.resources
-   console.log(data1.resources)
+  // console.log(data1.resources)
   for (const key in dataObj1) {
     if (dataObj1[key].user_id == followA[0] || dataObj1[key].user_id == followA[1]) {
-      const username = await getUserById(dataObj1[key].user_id);
-      console.log(username)
+      const username = await getUserById(dataObj1[key].user_id)
+      // console.log(username)
       homeDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj1[key].text}</div><div class="postTimestamp">${dataObj1[key].timestamp}</div></article>`
     }
   }
@@ -149,7 +134,7 @@ if (mypostDisplay != null) {
 }
 
 if (curDisplay != null) {
-  displayPosts(window.sessionStorage.getItem('usersearch'), curDisplay);
+  displayPosts(window.sessionStorage.getItem('usersearch'), curDisplay)
 }
 // Display public timline if the page is up
 if (publicDisplay != null) {
@@ -178,20 +163,20 @@ export function authenticateUser (username, password) {
     })
 }
 
-export function CreateUser(user, pass, em){
-  const data = { username: user, email: em, password: pass};
-  return fetch(`http://localhost:5000/users/`, { method: 'POST' ,
-  body: JSON.stringify(data),
+export function CreateUser (user, pass, em) {
+  const data = { username: user, email: em, password: pass }
+  return fetch('http://localhost:5000/users/', { method: 'POST',
+    body: JSON.stringify(data)
   })
-  .then(response => response.json())
-  .then(data => {
-    console.log('Success:', data);
-    return username;
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-    return null;
-  });
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data)
+      return user
+    })
+    .catch((error) => {
+      console.error('Error:', error)
+      return null
+    })
 }
 
 // authenticate user data from login form on login button click
@@ -276,9 +261,9 @@ if (document.getElementById('newPostButton')) {
         timestamp: timestamp
       })
     })
-    .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.log(err))
+      .then(res => res.json())
+      .then(data => console.log(data))
+      .catch(err => console.log(err))
 
     window.location.href = 'myPosts.html'
   })
@@ -288,23 +273,19 @@ if (document.getElementById('newPostButton')) {
 
 async function likePost () {
   const likeButtons = document.querySelectorAll('#likeButton')
-
-  console.log(likeButtons)
-  
+  // console.log(likeButtons)
   if (likeButtons) {
-    console.log("here inside if likebuttons")
+    // console.log("here inside if likebuttons")
     likeButtons.forEach(item => {
-      console.log("here inside for each")
+    // console.log("here inside for each")
       item.addEventListener('click', async event => {
         event.preventDefault()
-        console.log("here inside click")
-        const post_id = item.dataset.id
-        const user_id = window.sessionStorage.getItem('user_id')
-    
-        if (!user_id) {
+        // console.log("here inside click")
+        const postId = item.dataset.id
+        const userId = window.sessionStorage.getItem('user_id')
+        if (!userId) {
           window.location.href = "index.html"
         }
-    
         const now = new Date()
         const timestamp =
           now.getUTCFullYear() + '-' +
@@ -313,7 +294,6 @@ async function likePost () {
           String(now.getUTCHours()).padStart(2, '0') + ':' +
           String(now.getUTCMinutes()).padStart(2, '0') + ':' +
           String(now.getUTCSeconds()).padStart(2, '0')
-         
         await fetch('http://localhost:5000/likes/', {
           method: 'POST',
           headers: {
@@ -321,15 +301,14 @@ async function likePost () {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            post_id: post_id,
+            post_id: postId,
             timestamp: timestamp,
-            user_id: user_id
+            user_id: userId
           })
         })
-        .then(res => res.json())
-        .then(data => console.log(data))
-        .catch(err => console.log(err))
-    
+          .then(res => res.json())
+          .then(data => console.log(data))
+          .catch(err => console.log(err))
         item.classList.add('liked')
         item.classList.remove('likeButton')
       })
@@ -337,12 +316,3 @@ async function likePost () {
   }
   
 }
-
-
-
-
-
-
-
-
-
