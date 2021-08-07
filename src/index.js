@@ -68,6 +68,7 @@ const publicDisplay = document.querySelector('#publicTimeline-json')
 const curDisplay = document.querySelector('#curatedTimeline-json')
 const mypostDisplay = document.querySelector('#myPostsTimeline-json')
 const homeDisplay = document.querySelector('#homeTimeline-json')
+const messageDisplay = document.querySelector('#messages-json')
 
 // displaying posts
 async function displayPosts(userid, htmlElement){
@@ -111,6 +112,10 @@ if (curDisplay != null) {
 // Display public timline if the page is up
 if (publicDisplay != null) {
   displayPublicPosts()
+}
+
+if (messageDisplay != null) {
+  displayMessages(window.sessionStorage.getItem('user_id'), messageDisplay)
 }
 
 /*
@@ -295,7 +300,62 @@ async function likePost () {
   
 }
 
+// display messages from api
 
+async function displayMessages(user_id, htmlElement){
+  const response = await fetch(`http://localhost:5000/direct_messages/`, { method: 'get' })
+  const data = await response.json()
+  // console.log(JSON.stringify(data))
+  const dataObj = data.resources
+  // console.log(data.resources)
+
+  for (const key in dataObj) {
+    // console.log(dataObj[key].to_user_id)
+    // console.log(user_id)
+    if (dataObj[key].from_user_id == user_id || dataObj[key].to_user_id == user_id) {
+      // console.log(username)
+      htmlElement.innerHTML += `<article class="post"><div class="userId">From: ${await getUserById(dataObj[key].from_user_id)} To: ${await getUserById(dataObj[key].to_user_id)}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
+    }
+  }
+}
+
+// create message 
+if (document.getElementById('newMessageButton')) {
+  const newPostButton = document.getElementById('newMessageButton')
+  newPostButton.addEventListener('click', async event => {
+    event.preventDefault()
+    const now = new Date()
+    const timestamp =
+      now.getUTCFullYear() + '-' +
+      String(now.getUTCMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getUTCDate()).padStart(2, '0') + ' ' +
+      String(now.getUTCHours()).padStart(2, '0') + ':' +
+      String(now.getUTCMinutes()).padStart(2, '0') + ':' +
+      String(now.getUTCSeconds()).padStart(2, '0')
+
+    const messageText = document.getElementById('messageText').value
+    const to_user_id = document.getElementById('messageUserId').value
+
+    await fetch('http://localhost:5000/direct_messages/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from_user_id: window.sessionStorage.getItem('user_id'),
+        text:  messageText,
+        timestamp: timestamp,
+        to_user_id: to_user_id
+      })
+    })
+    .then(res => res.json())
+    .then(data => console.log(data))
+    .catch(err => console.log(err))
+
+    window.location.href = 'messages.html'
+  })
+}
 
 
 
