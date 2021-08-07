@@ -100,6 +100,49 @@ async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
   likePost()
 }
 
+// display public timeline from api
+async function displayPublicPosts (url = 'http://localhost:5000/posts/') {
+  const response = await fetch(url)
+  const data = await response.json()
+  // console.log(JSON.stringify(data))
+  const dataObj = data.resources
+  // console.log(data.resources)
+  for (const key in dataObj) {
+    const username = await getUserById(dataObj[key].user_id);
+    publicDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj[key].text}</div><div class="postTimestamp">${dataObj[key].timestamp}</div></article>`
+  }
+}
+
+async function displayHomePosts (userid) {
+  const response = await fetch('http://localhost:5000/followers/')
+  const data = await response.json()
+   //console.log(JSON.stringify(data))
+  const dataObj = data.resources
+   //console.log(data.resources)
+   const followA = []
+  for (const key in dataObj) {
+    if (dataObj[key].follower_id == userid) {
+      followA.push(dataObj[key].following_id)
+    }
+  }
+
+  const response1 = await fetch('http://localhost:5000/posts/')
+  const data1 = await response1.json()
+  const dataObj1 = data1.resources
+   console.log(data1.resources)
+  for (const key in dataObj1) {
+    if (dataObj1[key].user_id == followA[0] || dataObj1[key].user_id == followA[1]) {
+      const username = await getUserById(dataObj1[key].user_id);
+      console.log(username)
+      homeDisplay.innerHTML += `<article class="post"><div class="userId">User: ${username}</div><div class="postText">${dataObj1[key].text}</div><div class="postTimestamp">${dataObj1[key].timestamp}</div></article>`
+    }
+  }
+}
+
+if (homeDisplay != null) {
+  displayHomePosts(window.sessionStorage.getItem('user_id'))
+}
+
 if (mypostDisplay != null) {
   console.log(window.sessionStorage.getItem('user_id'))
   displayPosts(window.sessionStorage.getItem('user_id'), mypostDisplay)
