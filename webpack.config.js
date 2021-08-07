@@ -38,6 +38,10 @@ module.exports = {
       filename: 'newUser.html',
       template: path.resolve(__dirname, 'src/newUser.html')
     }),
+    new HtmlWebpackPlugin({
+      filename: 'messages.html',
+      template: path.resolve(__dirname, 'src/messages.html')
+    }),
     
   ],
   module: {
